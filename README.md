@@ -12,7 +12,6 @@ Run functions in parallel safely with typesafe parmap!
 
 * GitHub: <https://github.com/thejaminator/typesafe_parmap>
 * PyPI: <https://pypi.org/project/typesafe_parmap/>
-* Free software: MIT
 
 
 ## Features
@@ -46,7 +45,3 @@ Function return types are inferred correctly by mypy / pycharm!
 reveal_type(int_result) # mypy infers int
 reveal_type(str_result) # mypy infers str
 ```
-
-## Credits
-
-This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [waynerv/cookiecutter-pypackage](https://github.com/waynerv/cookiecutter-pypackage) project template.

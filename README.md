@@ -46,3 +46,9 @@ Function return types are inferred correctly by mypy / pycharm!
 reveal_type(int_result) # mypy infers int
 reveal_type(str_result) # mypy infers str
 ```
+
+Got more than two functions to run? We got you covered..
+```
+from typesafe_parmap import par_map_3
+```
+... all the way to par_map_22!

@@ -1,26 +1,27 @@
 # typesafe_parmap
 
 
-[![pypi](https://img.shields.io/pypi/v/typesafe_parmap.svg)](https://pypi.org/project/typesafe_parmap/)
-[![python](https://img.shields.io/pypi/pyversions/typesafe_parmap.svg)](https://pypi.org/project/typesafe_parmap/)
+[![pypi](https://img.shields.io/pypi/v/typesafe-parmap.svg)](https://pypi.org/project/typesafe-parmap)
+[![python](https://img.shields.io/pypi/pyversions/typesafe-parmap.svg)](https://pypi.org/project/typesafe-parmap)
 [![Build Status](https://github.com/thejaminator/typesafe_parmap/actions/workflows/dev.yml/badge.svg)](https://github.com/thejaminator/typesafe_parmap/actions/workflows/dev.yml)
 
-
+```
+pip install pip install typesafe-parmap
+```
 
 Run functions in parallel safely with typesafe parmap!
 
 
 * GitHub: <https://github.com/thejaminator/typesafe_parmap>
-* PyPI: <https://pypi.org/project/typesafe_parmap/>
 
 
 ## Features
 
 Easy run different functions in parallel!
 ```
+from typesafe_parmap import par_map_2
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typesafe_parmap.parmap import par_map_2
 
 tp = ThreadPoolExecutor(5)
 

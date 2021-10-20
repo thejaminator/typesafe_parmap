@@ -1,5 +1,5 @@
-from typing import *
 import concurrent.futures
+from typing import *
 
 A1 = TypeVar("A1")
 A2 = TypeVar("A2")
@@ -595,9 +595,7 @@ def par_map_18(
     func17: Callable[[], A17],
     func18: Callable[[], A18],
     executor: concurrent.futures.Executor,
-) -> Tuple[
-    A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18
-]:
+) -> Tuple[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18]:
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -659,9 +657,7 @@ def par_map_19(
     func18: Callable[[], A18],
     func19: Callable[[], A19],
     executor: concurrent.futures.Executor,
-) -> Tuple[
-    A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19
-]:
+) -> Tuple[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19]:
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -726,28 +722,7 @@ def par_map_20(
     func19: Callable[[], A19],
     func20: Callable[[], A20],
     executor: concurrent.futures.Executor,
-) -> Tuple[
-    A1,
-    A2,
-    A3,
-    A4,
-    A5,
-    A6,
-    A7,
-    A8,
-    A9,
-    A10,
-    A11,
-    A12,
-    A13,
-    A14,
-    A15,
-    A16,
-    A17,
-    A18,
-    A19,
-    A20,
-]:
+) -> Tuple[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20,]:
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -815,29 +790,7 @@ def par_map_21(
     func20: Callable[[], A20],
     func21: Callable[[], A21],
     executor: concurrent.futures.Executor,
-) -> Tuple[
-    A1,
-    A2,
-    A3,
-    A4,
-    A5,
-    A6,
-    A7,
-    A8,
-    A9,
-    A10,
-    A11,
-    A12,
-    A13,
-    A14,
-    A15,
-    A16,
-    A17,
-    A18,
-    A19,
-    A20,
-    A21,
-]:
+) -> Tuple[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21,]:
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -908,30 +861,7 @@ def par_map_22(
     func21: Callable[[], A21],
     func22: Callable[[], A22],
     executor: concurrent.futures.Executor,
-) -> Tuple[
-    A1,
-    A2,
-    A3,
-    A4,
-    A5,
-    A6,
-    A7,
-    A8,
-    A9,
-    A10,
-    A11,
-    A12,
-    A13,
-    A14,
-    A15,
-    A16,
-    A17,
-    A18,
-    A19,
-    A20,
-    A21,
-    A22,
-]:
+) -> Tuple[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21, A22,]:
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)

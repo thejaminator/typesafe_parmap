@@ -1,3 +1,10 @@
-{%
-  include-markdown "../CONTRIBUTING.md"
-%}
+##
+Run tests
+```
+pytest
+```
+
+Run builds
+```
+poetry run tox
+```

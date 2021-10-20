@@ -3,7 +3,7 @@
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-from typesafe_parmap.parmap import par_map_3, par_map_2
+from typesafe_parmap import par_map_2, par_map_3
 
 
 def test_par_map() -> None:

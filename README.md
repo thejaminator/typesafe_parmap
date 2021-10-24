@@ -1,4 +1,4 @@
-# typesafe_parmap
+# Typesafe parmap
 
 
 [![pypi](https://img.shields.io/pypi/v/typesafe-parmap.svg)](https://pypi.org/project/typesafe-parmap)
@@ -6,10 +6,10 @@
 [![Build Status](https://github.com/thejaminator/typesafe_parmap/actions/workflows/dev.yml/badge.svg)](https://github.com/thejaminator/typesafe_parmap/actions/workflows/dev.yml)
 
 ```
-pip install pip install typesafe-parmap
+pip install typesafe-parmap
 ```
 
-Run functions in parallel safely with typesafe parmap!
+Run functions in parallel safely with your type checkers
 
 
 * GitHub: <https://github.com/thejaminator/typesafe_parmap>
@@ -17,7 +17,7 @@ Run functions in parallel safely with typesafe parmap!
 
 ## Features
 
-Easy run different functions in parallel!
+Easy run different functions in parallel
 ```
 from typesafe_parmap import par_map_2
 import time
@@ -37,18 +37,40 @@ int_result, str_result = par_map_2(
                         lambda: long_running_int(5),
                         lambda: long_running_str("test"),
                         executor=tp)
-assert int_result == 123, str_result == "hello world"  # should finish in 5 seconds
+assert int_result == 123, str_result == "hello world"  # should finish in around 5 seconds
 ```
 
-Function return types are inferred correctly by mypy / pycharm!
+Function return types are inferred correctly by mypy / pycharm
 
 ```
 reveal_type(int_result) # mypy infers int
 reveal_type(str_result) # mypy infers str
 ```
 
-Got more than two functions to run? We got you covered..
+Accidentally unpacked too many / little values? Type inference checks that for you!
 ```
-from typesafe_parmap import par_map_3
+one, two, three, four = par_map_3(
+        lambda: long_running_int(5), lambda: long_running_str("test"), lambda: "something", executor=tp
+    ) # Error: Need more than 3 values to unapck, (4 expected)
 ```
-... all the way to par_map_22!
+
+Got more than a few functions to run? We got you covered...
+```
+from typesafe_parmap import par_map_4 # ... all the way to par_map_22!
+```
+
+Want to change the number of functions to run in parallel? Hate having to import a different one each time?
+Use par_map_n!
+```
+a = par_map_2(lambda: long_running_int(5), lambda: long_running_str("test"), executor=executor)
+b = par_map_n(lambda: long_running_int(5), lambda: long_running_str("test"),  executor=executor)
+
+assert a == b
+
+c = par_map_3(lambda: long_running_int(5), lambda: long_running_str("test"), lambda: long_running_str("test"), executor=executor)
+d = par_map_n(lambda: long_running_int(5), lambda: long_running_str("test"), lambda: long_running_str("test"), executor=executor)
+
+assert c == d
+```
+
+

@@ -19,3 +19,4 @@ from typesafe_parmap.parmap import par_map_19
 from typesafe_parmap.parmap import par_map_20
 from typesafe_parmap.parmap import par_map_21
 from typesafe_parmap.parmap import par_map_22
+from typesafe_parmap.parmap import par_map_n

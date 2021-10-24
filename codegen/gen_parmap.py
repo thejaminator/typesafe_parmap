@@ -1,3 +1,6 @@
+from codegen.constants import MAX_N
+
+
 def generate_generics_assignments(n: int) -> str:
     generics: list[str] = []
     for i in range(1, n):
@@ -45,7 +48,6 @@ def return_statement(n: int) -> str:
 
 
 if __name__ == "__main__":
-    MAX_N = 23
     _parmap_funcs: list[str] = []
     for n in range(2, MAX_N):
         _parmap_funcs.append(generate_parmap(n))

@@ -42,9 +42,17 @@ def test_example() -> None:
 
     assert a == b
 
-    c = par_map_3(lambda: long_running_int(5), lambda: long_running_str("test"), lambda: long_running_str("test"),
-                  executor=executor)
-    d = par_map_n(lambda: long_running_int(5), lambda: long_running_str("test"), lambda: long_running_str("test"),
-                  executor=executor)
+    c = par_map_3(
+        lambda: long_running_int(5),
+        lambda: long_running_str("test"),
+        lambda: long_running_str("test"),
+        executor=executor,
+    )
+    d = par_map_n(
+        lambda: long_running_int(5),
+        lambda: long_running_str("test"),
+        lambda: long_running_str("test"),
+        executor=executor,
+    )
 
     assert c == d

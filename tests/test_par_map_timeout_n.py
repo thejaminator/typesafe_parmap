@@ -2,8 +2,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 
+from typesafe_parmap import par_map_timeout_n
 from typesafe_parmap.parmap_timeout import par_map_timeout_2
-from typesafe_parmap.parmap_timeout_n import par_map_timeout_n
 
 
 def long_running_int(param: int) -> int:
@@ -42,9 +42,9 @@ def test_timeout_parmap_3_threads():
     # Since there are 3 threads, we should be able to run 3 functions at once
     executor = ThreadPoolExecutor(3)
     int_result, str_result_1, str_result_2 = par_map_timeout_n(
-        func1=lambda: long_running_int(5),
-        func2=lambda: short_running_str("test 1", sleep_seconds=1),
-        func3=lambda: short_running_str("test 2", sleep_seconds=1),
+        lambda: long_running_int(5),
+        lambda: short_running_str("test 1", sleep_seconds=1),
+        lambda: short_running_str("test 2", sleep_seconds=1),
         executor=executor,
         timeout=timedelta(seconds=5),
     )

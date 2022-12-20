@@ -84,4 +84,24 @@ d = par_map_n(
 assert c == d
 ```
 
-
+## Timeouts
+Suppose you want to run a bunch of functions that might take a long time, but you don't want to wait forever.
+Use par_map_timeout_n!
+```python
+from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
+from typesafe_parmap import par_map_timeout_n
+# Since there are 3 threads, we should be able to run 3 functions at once
+executor = ThreadPoolExecutor(3)
+int_result, str_result_1, str_result_2 = par_map_timeout_n(
+    lambda: long_running_int(5),
+    lambda: short_running_str("test 1"),
+    lambda: short_running_str("test 2"),
+    executor=executor,
+    timeout=timedelta(seconds=5),
+)
+assert int_result is None # This function timed out
+assert str_result_1 == "test 1" # This still finished in time
+assert str_result_2 == "test 2" # This still finished in time
+```
+Note that as a result of the timeout, the return types of the int_result and str_result_1 are now Optional[str] and Optional[int] respectively.

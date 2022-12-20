@@ -17,7 +17,6 @@ def short_running_str(param: str, sleep_seconds: int = 1) -> str:
 
 
 def test_timeout_parmap():
-
     executor = ThreadPoolExecutor(2)
     int_result, str_result = par_map_timeout_2(
         func1=lambda: long_running_int(5),
@@ -39,8 +38,9 @@ def test_timeout_parmap():
     assert str_result_2 == "test 2"
 
 
-def test_timeout_parmap_n():
-    executor = ThreadPoolExecutor(2)
+def test_timeout_parmap_3_threads():
+    # Since there are 3 threads, we should be able to run 3 functions at once
+    executor = ThreadPoolExecutor(3)
     int_result, str_result_1, str_result_2 = par_map_timeout_n(
         func1=lambda: long_running_int(5),
         func2=lambda: short_running_str("test 1", sleep_seconds=1),
@@ -51,6 +51,21 @@ def test_timeout_parmap_n():
     assert int_result is None
     assert str_result_1 == "test 1"
     assert str_result_2 == "test 2"
+
+
+def test_timeout_parmap_1_thread():
+    # Since there is only 1 thread, we should only be able to run 1 function at a time
+    executor = ThreadPoolExecutor(1)
+    int_result, str_result_1, str_result_2 = par_map_timeout_n(
+        func1=lambda: long_running_int(5),
+        func2=lambda: short_running_str("test 1", sleep_seconds=1),
+        func3=lambda: short_running_str("test 2", sleep_seconds=1),
+        executor=executor,
+        timeout=timedelta(seconds=5),
+    )
+    assert int_result is None
+    assert str_result_1 is None, "The second function should have timed out since there is only 1 thread"
+    assert str_result_2 is None, "The third function should have timed out since there is only 1 thread"
 
 
 def test_timeout_overall_2():

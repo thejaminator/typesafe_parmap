@@ -10,7 +10,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2]]:
     ...
 
@@ -23,7 +23,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3]]:
     ...
 
@@ -37,7 +37,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4]]:
     ...
 
@@ -52,7 +52,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5]]:
     ...
 
@@ -68,7 +68,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6]]:
     ...
 
@@ -85,7 +85,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6], Optional[A7]]:
     ...
 
@@ -103,7 +103,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6], Optional[A7], Optional[A8]
 ]:
@@ -124,7 +124,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -154,7 +154,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -186,7 +186,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -220,7 +220,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -256,7 +256,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -294,7 +294,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -334,7 +334,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -376,7 +376,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -420,7 +420,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -466,7 +466,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -514,7 +514,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -564,7 +564,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -616,7 +616,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -670,7 +670,7 @@ def par_map_timeout_n(
     *,
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],

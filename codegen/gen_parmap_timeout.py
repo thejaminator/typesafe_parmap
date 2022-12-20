@@ -14,7 +14,7 @@ def par_map_timeout_{n}(
     {signature_variables(n)},
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[{signature_return_generics(n)}]:
     {assignments(n)}
     return {return_statement(n)}

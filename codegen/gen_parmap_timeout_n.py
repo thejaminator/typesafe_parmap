@@ -75,7 +75,7 @@ def generate_overloads() -> str:
 def generate_single_overload(i: int) -> str:
     definition = f"""
 @overload
-def par_map_timeout_n({mandatory_signature_variables(i)}, *, executor: concurrent.futures.Executor, timeout: timedelta, logger: Optional[Callable[[str], None]] = None) -> Tuple[{signature_return_generics(i)}]:
+def par_map_timeout_n({mandatory_signature_variables(i)}, *, executor: concurrent.futures.Executor, timeout: timedelta, logger: Optional[Callable[[str], None]] = print) -> Tuple[{signature_return_generics(i)}]:
     ...
 """
     return definition

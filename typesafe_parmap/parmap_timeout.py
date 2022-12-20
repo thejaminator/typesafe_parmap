@@ -56,7 +56,7 @@ def par_map_timeout_2(
     func2: Callable[[], A2],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2]]:
     starting_time = datetime.now()
     time_left_after_fut0 = timeout
@@ -89,7 +89,7 @@ def par_map_timeout_3(
     func3: Callable[[], A3],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3]]:
     starting_time = datetime.now()
     time_left_after_fut0 = timeout
@@ -133,7 +133,7 @@ def par_map_timeout_4(
     func4: Callable[[], A4],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4]]:
     starting_time = datetime.now()
     time_left_after_fut0 = timeout
@@ -188,7 +188,7 @@ def par_map_timeout_5(
     func5: Callable[[], A5],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5]]:
     starting_time = datetime.now()
     time_left_after_fut0 = timeout
@@ -254,7 +254,7 @@ def par_map_timeout_6(
     func6: Callable[[], A6],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6]]:
     starting_time = datetime.now()
     time_left_after_fut0 = timeout
@@ -331,7 +331,7 @@ def par_map_timeout_7(
     func7: Callable[[], A7],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6], Optional[A7]]:
     starting_time = datetime.now()
     time_left_after_fut0 = timeout
@@ -419,7 +419,7 @@ def par_map_timeout_8(
     func8: Callable[[], A8],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6], Optional[A7], Optional[A8]
 ]:
@@ -520,7 +520,7 @@ def par_map_timeout_9(
     func9: Callable[[], A9],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -650,7 +650,7 @@ def par_map_timeout_10(
     func10: Callable[[], A10],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -793,7 +793,7 @@ def par_map_timeout_11(
     func11: Callable[[], A11],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -949,7 +949,7 @@ def par_map_timeout_12(
     func12: Callable[[], A12],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -1118,7 +1118,7 @@ def par_map_timeout_13(
     func13: Callable[[], A13],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -1300,7 +1300,7 @@ def par_map_timeout_14(
     func14: Callable[[], A14],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -1495,7 +1495,7 @@ def par_map_timeout_15(
     func15: Callable[[], A15],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -1703,7 +1703,7 @@ def par_map_timeout_16(
     func16: Callable[[], A16],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -1924,7 +1924,7 @@ def par_map_timeout_17(
     func17: Callable[[], A17],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -2158,7 +2158,7 @@ def par_map_timeout_18(
     func18: Callable[[], A18],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -2405,7 +2405,7 @@ def par_map_timeout_19(
     func19: Callable[[], A19],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -2665,7 +2665,7 @@ def par_map_timeout_20(
     func20: Callable[[], A20],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -2938,7 +2938,7 @@ def par_map_timeout_21(
     func21: Callable[[], A21],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],
@@ -3224,7 +3224,7 @@ def par_map_timeout_22(
     func22: Callable[[], A22],
     executor: concurrent.futures.Executor,
     timeout: timedelta,
-    logger: Optional[Callable[[str], None]] = None,
+    logger: Optional[Callable[[str], None]] = print,
 ) -> Tuple[
     Optional[A1],
     Optional[A2],

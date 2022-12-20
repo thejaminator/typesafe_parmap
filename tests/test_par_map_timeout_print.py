@@ -21,7 +21,7 @@ def test_timeout_parmap_logger():
         logger=fake_logger,
     )
     assert (
-        set_value == "par_map func1: <lambda> timed out after 3 seconds"
+        set_value == "par_map func1: <lambda> timed out after 3.0 seconds"
     ), "The logger should have been called with the correct message"
 
 
@@ -42,7 +42,7 @@ def test_timeout_parmap_named_thunk():
         logger=fake_logger,
     )
     assert (
-        set_value == "par_map func1: Long Running Int timed out after 3 seconds"
+        set_value == "par_map func1: Long Running Int timed out after 3.0 seconds"
     ), "The logger should have been called with the correct message"
 
 def test_timeout_parmap_named_thunk_example():
@@ -55,4 +55,4 @@ def test_timeout_parmap_named_thunk_example():
         logger=print,
     )
     # Prints:
-    # par_map func1: Long Running Int timed out after 3 seconds
+    # par_map func1: Long Running Int timed out after 3.0 seconds

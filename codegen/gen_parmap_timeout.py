@@ -10,7 +10,7 @@ def generate_generics_assignments(n: int) -> str:
 
 def generate_parmap(n: int) -> str:
     return f"""
-def par_map_{n}_timeout(
+def par_map_timeout_{n}(
     {signature_variables(n)},
     executor: concurrent.futures.Executor,
     timeout: timedelta,

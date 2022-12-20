@@ -46,7 +46,7 @@ A21 = TypeVar("A21")
 A22 = TypeVar("A22")
 
 
-def par_map_2_timeout(
+def par_map_timeout_2(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     executor: concurrent.futures.Executor,
@@ -64,7 +64,7 @@ def par_map_2_timeout(
     return fut1_result, fut2_result
 
 
-def par_map_3_timeout(
+def par_map_timeout_3(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -87,7 +87,7 @@ def par_map_3_timeout(
     return fut1_result, fut2_result, fut3_result
 
 
-def par_map_4_timeout(
+def par_map_timeout_4(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -115,7 +115,7 @@ def par_map_4_timeout(
     return fut1_result, fut2_result, fut3_result, fut4_result
 
 
-def par_map_5_timeout(
+def par_map_timeout_5(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -148,7 +148,7 @@ def par_map_5_timeout(
     return fut1_result, fut2_result, fut3_result, fut4_result, fut5_result
 
 
-def par_map_6_timeout(
+def par_map_timeout_6(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -186,7 +186,7 @@ def par_map_6_timeout(
     return fut1_result, fut2_result, fut3_result, fut4_result, fut5_result, fut6_result
 
 
-def par_map_7_timeout(
+def par_map_timeout_7(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -229,7 +229,7 @@ def par_map_7_timeout(
     return fut1_result, fut2_result, fut3_result, fut4_result, fut5_result, fut6_result, fut7_result
 
 
-def par_map_8_timeout(
+def par_map_timeout_8(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -279,7 +279,7 @@ def par_map_8_timeout(
     return fut1_result, fut2_result, fut3_result, fut4_result, fut5_result, fut6_result, fut7_result, fut8_result
 
 
-def par_map_9_timeout(
+def par_map_timeout_9(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -352,7 +352,7 @@ def par_map_9_timeout(
     )
 
 
-def par_map_10_timeout(
+def par_map_timeout_10(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -432,7 +432,7 @@ def par_map_10_timeout(
     )
 
 
-def par_map_11_timeout(
+def par_map_timeout_11(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -519,7 +519,7 @@ def par_map_11_timeout(
     )
 
 
-def par_map_12_timeout(
+def par_map_timeout_12(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -613,7 +613,7 @@ def par_map_12_timeout(
     )
 
 
-def par_map_13_timeout(
+def par_map_timeout_13(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -714,7 +714,7 @@ def par_map_13_timeout(
     )
 
 
-def par_map_14_timeout(
+def par_map_timeout_14(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -822,7 +822,7 @@ def par_map_14_timeout(
     )
 
 
-def par_map_15_timeout(
+def par_map_timeout_15(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -937,7 +937,7 @@ def par_map_15_timeout(
     )
 
 
-def par_map_16_timeout(
+def par_map_timeout_16(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -1059,7 +1059,7 @@ def par_map_16_timeout(
     )
 
 
-def par_map_17_timeout(
+def par_map_timeout_17(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -1188,7 +1188,7 @@ def par_map_17_timeout(
     )
 
 
-def par_map_18_timeout(
+def par_map_timeout_18(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -1324,7 +1324,7 @@ def par_map_18_timeout(
     )
 
 
-def par_map_19_timeout(
+def par_map_timeout_19(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -1467,7 +1467,7 @@ def par_map_19_timeout(
     )
 
 
-def par_map_20_timeout(
+def par_map_timeout_20(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -1617,7 +1617,7 @@ def par_map_20_timeout(
     )
 
 
-def par_map_21_timeout(
+def par_map_timeout_21(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -1774,7 +1774,7 @@ def par_map_21_timeout(
     )
 
 
-def par_map_22_timeout(
+def par_map_timeout_22(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],

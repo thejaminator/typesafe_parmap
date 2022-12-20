@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 
 from typesafe_parmap import par_map_2, par_map_3, par_map_n
-from typesafe_parmap.parmap_timeout import par_map_2_timeout
+from typesafe_parmap.parmap_timeout import par_map_timeout_2
 
 tp = ThreadPoolExecutor(5)
 
@@ -69,7 +69,7 @@ def test_timeout_parmap():
         return param
 
     executor = ThreadPoolExecutor(2)
-    int_result, str_result = par_map_2_timeout(
+    int_result, str_result = par_map_timeout_2(
         func1=lambda: long_running_int(5),
         func2=lambda: short_running_str("test"),
         executor=executor,

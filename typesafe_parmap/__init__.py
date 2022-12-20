@@ -22,3 +22,4 @@ from typesafe_parmap.parmap import par_map_22
 from typesafe_parmap.parmap import par_map_n
 from typesafe_parmap.parmap_timeout import *
 from typesafe_parmap.parmap_timeout_n import *
+from typesafe_parmap.named_thunk import NamedThunk

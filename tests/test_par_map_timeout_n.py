@@ -91,21 +91,21 @@ def test_timeout_overall_2():
 
 def test_timeout_overall_ms():
     # The timeout should be applied overall
-    # We limit the timeout to 40 ms
-    # Each function takes 30 ms
-    # So the parmap should timeout after 40 ms, not 80
+    # We limit the timeout to 400 ms
+    # Each function takes 300 ms
+    # So the parmap should timeout after 400 ms, not 800
 
     executor = ThreadPoolExecutor(1)
     start_time = time.time()
     str_result_1, str_result_2 = par_map_timeout_2(
-        lambda: short_running_str("test 1", sleep_seconds=0.03),
-        lambda: short_running_str("test 2", sleep_seconds=0.03),
+        lambda: short_running_str("test 1", sleep_seconds=0.3),
+        lambda: short_running_str("test 2", sleep_seconds=0.3),
         executor=executor,
-        timeout=timedelta(milliseconds=40),
+        timeout=timedelta(milliseconds=400),
     )
     end_time = time.time()
     total_time = end_time - start_time
-    assert total_time < 0.05, "The parmap should have timed out after 4 ms"
+    assert total_time < 0.59, "The parmap should have timed out after 4 ms"
     assert str_result_1 == "test 1"
     assert str_result_2 is None
 

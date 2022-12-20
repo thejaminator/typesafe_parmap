@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 
 from tests.test_par_map_timeout_n import long_running_int, short_running_str
-from typesafe_parmap import par_map_timeout_n
+from typesafe_parmap import par_map_timeout_n, NamedThunk
 
 
 def test_timeout_parmap_logger():
@@ -45,3 +45,14 @@ def test_timeout_parmap_named_thunk():
         set_value == "par_map func1: Long Running Int timed out after 3 seconds"
     ), "The logger should have been called with the correct message"
 
+def test_timeout_parmap_named_thunk_example():
+    executor = ThreadPoolExecutor(2)
+    par_map_timeout_n(
+        NamedThunk(lambda: long_running_int(5), name="Long Running Int"),
+        lambda: short_running_str("test 2"),
+        executor=executor,
+        timeout=timedelta(seconds=3),
+        logger=print,
+    )
+    # Prints:
+    # par_map func1: Long Running Int timed out after 3 seconds

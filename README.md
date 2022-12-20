@@ -105,3 +105,23 @@ assert str_result_1 == "test 1" # This still finished in time
 assert str_result_2 == "test 2" # This still finished in time
 ```
 Note that as a result of the timeout, the return types of the int_result and str_result_1 are now Optional[str] and Optional[int] respectively.
+
+
+### Logging timeouts
+par_map_timeout_n accepts a logger parameter.
+We also provide a class `NamedThunk`, which allows you to name your thunks so that the name is not just `<lambda>` in the logs.
+```python
+from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
+from typesafe_parmap import par_map_timeout_n, NamedThunk
+executor = ThreadPoolExecutor(2)
+par_map_timeout_n(
+    NamedThunk(lambda: long_running_int(5), name="Long Running Int"),
+    lambda: short_running_str("test 2"),
+    executor=executor,
+    timeout=timedelta(seconds=3),
+    logger=print,
+)
+# Prints:
+# par_map func1: Long Running Int timed out after 3 seconds
+```

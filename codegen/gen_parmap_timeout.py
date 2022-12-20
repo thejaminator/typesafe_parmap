@@ -54,9 +54,9 @@ def assignments(n: int) -> str:
             f"fut{i}_result = try_future_result(future=fut{i}, timeout_left=time_left_after_fut{i -1}, overall_timeout=timeout, logger=logger, func_name=func{i}.__name__, func_number={i})"
         )
         """
-        time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
+        time_left_after_fut1: timedelta = min_zero_timedelta(timeout - (datetime.now() - starting_time))
         """
-        var_assignments.append(f"time_left_after_fut{i}: timedelta = abs(timeout - (datetime.now() - starting_time))")
+        var_assignments.append(f"time_left_after_fut{i}: timedelta = min_zero_timedelta(timeout - (datetime.now() - starting_time))")
 
     return "\n    ".join(var_assignments)  # hacky indent
 

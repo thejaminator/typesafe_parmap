@@ -113,3 +113,4 @@ def test_timeout_overall():
     end_time = time.time()
     total_time = end_time - start_time
     assert total_time < 6, "The parmap should have timed out after 5 seconds"
+    assert total_time > 4, "The parmap should have timed out after 5 seconds"

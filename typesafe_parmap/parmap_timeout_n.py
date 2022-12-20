@@ -1,10 +1,10 @@
-from typing import overload
+from typing import overload, Union
 from concurrent.futures import Future
 from typesafe_parmap.parmap_timeout import *
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     *,
@@ -16,7 +16,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -29,7 +29,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -43,7 +43,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -58,7 +58,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -74,7 +74,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -91,7 +91,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -111,7 +111,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -140,7 +140,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -171,7 +171,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -204,7 +204,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -239,7 +239,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -276,7 +276,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -315,7 +315,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -356,7 +356,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -399,7 +399,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -444,7 +444,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -491,7 +491,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -540,7 +540,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -591,7 +591,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -644,7 +644,7 @@ def par_map_n(
 
 
 @overload
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Callable[[], A3],
@@ -698,7 +698,7 @@ def par_map_n(
     ...
 
 
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     func3: Optional[Callable[[], A3]] = None,
@@ -1552,4 +1552,4 @@ def par_map_n(
             func1=func1, func2=func2, func3=func3, executor=executor, timeout=timeout, logger=logger
         )
     else:
-        return par_map_timeout_2(func1=func1, func2=func2, executor=executor)
+        return par_map_timeout_2(func1=func1, func2=func2, executor=executor, timeout=timeout, logger=logger)

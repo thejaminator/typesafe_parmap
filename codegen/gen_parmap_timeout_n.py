@@ -4,7 +4,7 @@ from codegen.gen_parmap_timeout import signature_return_generics
 # To generate the actual function
 def generate_parmap_n_main_fn() -> str:
     return f"""
-def par_map_n(
+def par_map_timeout_n(
     func1: Callable[[], A1],
     func2: Callable[[], A2],
     {optional_signature_variables(start=3, n=MAX_N)},
@@ -16,7 +16,7 @@ def par_map_n(
     \"""Executes 2 to 22 functions in parallel\"""
     {all_checks_and_returns()}
     else:
-        return par_map_timeout_2(func1=func1, func2=func2, executor=executor)
+        return par_map_timeout_2(func1=func1, func2=func2, executor=executor, timeout=timeout, logger=logger)
 """
 
 
@@ -75,7 +75,7 @@ def generate_overloads() -> str:
 def generate_single_overload(i: int) -> str:
     definition = f"""
 @overload
-def par_map_n({mandatory_signature_variables(i)}, *, executor: concurrent.futures.Executor, timeout: timedelta, logger: Optional[Callable[[str], None]] = None) -> Tuple[{signature_return_generics(i)}]:
+def par_map_timeout_n({mandatory_signature_variables(i)}, *, executor: concurrent.futures.Executor, timeout: timedelta, logger: Optional[Callable[[str], None]] = None) -> Tuple[{signature_return_generics(i)}]:
     ...
 """
     return definition
@@ -94,4 +94,3 @@ if __name__ == "__main__":
     with open("generated_gen_parmap_timeout_n.py", "w+") as text_file:
         text_file.write(overloads)
         text_file.write(main_function)
-

@@ -19,8 +19,8 @@ def try_future_result(
     func_name: str,
     func_number: int,
 ) -> Optional[A]:
-    seconds_left = timeout_left.seconds
-    overall_seconds = overall_timeout.seconds
+    seconds_left = timeout_left.total_seconds()
+    overall_seconds = overall_timeout.total_seconds()
 
     try:
         # Use the seconds_left as the timeout for the future result, not the overall timeout

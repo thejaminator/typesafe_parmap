@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "typesafe_parmap"
-version = "1.0.5"
+version = "1.0.6"
 homepage = "https://github.com/thejaminator/typesafe_parmap"
 description = "Run functions in parallel safely with typesafe parmap!."
 authors = ["James Chua <chuajamessh@gmail.com>"]

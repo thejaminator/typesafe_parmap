@@ -37,6 +37,8 @@ def signature_return_generics(n: int) -> str:
 
 def assignments(n: int) -> str:
     var_assignments: list[str] = []
+    var_assignments.append("starting_time = datetime.now()")
+    var_assignments.append("time_left_after_fut0 = timeout")
     for i in range(1, n + 1):
         """
         executor.submit(func1)
@@ -45,12 +47,16 @@ def assignments(n: int) -> str:
     for i in range(1, n + 1):
         """
         fut1_result = try_future_result(
-        future=fut1, timeout_seconds=timeout_seconds, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1, timeout_left=time_left_after_fut0, overall_timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
         )
         """
         var_assignments.append(
-            f"fut{i}_result = try_future_result(future=fut{i}, timeout=timeout, logger=logger, func_name=func{i}.__name__, func_number={i})"
+            f"fut{i}_result = try_future_result(future=fut{i}, timeout_left=time_left_after_fut{i -1}, overall_timeout=timeout, logger=logger, func_name=func{i}.__name__, func_number={i})"
         )
+        """
+        time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
+        """
+        var_assignments.append(f"time_left_after_fut{i}: timedelta = abs(timeout - (datetime.now() - starting_time))")
 
     return "\n    ".join(var_assignments)  # hacky indent
 

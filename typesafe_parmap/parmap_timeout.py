@@ -8,17 +8,22 @@ A = TypeVar("A")
 
 def try_future_result(
     future: concurrent.futures.Future[A],
-    timeout: timedelta,
+    timeout_left: timedelta,
+    overall_timeout: timedelta,
     logger: Optional[Callable[[str], None]],
     func_name: str,
     func_number: int,
 ) -> Optional[A]:
-    seconds = timeout.seconds
+    seconds_left = timeout_left.seconds
+    overall_seconds = overall_timeout.seconds
+
     try:
-        return future.result(timeout=seconds)
+        # Use the seconds_left as the timeout for the future result, not the overall timeout
+        # This is so that the par_map timeout overall, not for each individual future
+        return future.result(timeout=seconds_left)
     except concurrent.futures.TimeoutError:
         if logger:
-            logger(f"par_map func{func_number}: {func_name} timed out after {seconds} seconds")
+            logger(f"par_map func{func_number}: {func_name} timed out after {overall_seconds} seconds")
         return None
 
 
@@ -54,15 +59,27 @@ def par_map_timeout_2(
     logger: Optional[Callable[[str], None]] = None,
 ) -> Tuple[Optional[A1], Optional[A2]]:
     starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
     time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=time_left_after_fut1, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     return fut1_result, fut2_result
 
 
@@ -74,18 +91,38 @@ def par_map_timeout_3(
     timeout: timedelta,
     logger: Optional[Callable[[str], None]] = None,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3]]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     return fut1_result, fut2_result, fut3_result
 
 
@@ -98,22 +135,48 @@ def par_map_timeout_4(
     timeout: timedelta,
     logger: Optional[Callable[[str], None]] = None,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4]]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
     fut4 = executor.submit(func4)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     return fut1_result, fut2_result, fut3_result, fut4_result
 
 
@@ -127,26 +190,58 @@ def par_map_timeout_5(
     timeout: timedelta,
     logger: Optional[Callable[[str], None]] = None,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5]]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
     fut4 = executor.submit(func4)
     fut5 = executor.submit(func5)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     return fut1_result, fut2_result, fut3_result, fut4_result, fut5_result
 
 
@@ -161,6 +256,8 @@ def par_map_timeout_6(
     timeout: timedelta,
     logger: Optional[Callable[[str], None]] = None,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6]]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -168,23 +265,59 @@ def par_map_timeout_6(
     fut5 = executor.submit(func5)
     fut6 = executor.submit(func6)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     return fut1_result, fut2_result, fut3_result, fut4_result, fut5_result, fut6_result
 
 
@@ -200,6 +333,8 @@ def par_map_timeout_7(
     timeout: timedelta,
     logger: Optional[Callable[[str], None]] = None,
 ) -> Tuple[Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6], Optional[A7]]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -208,26 +343,68 @@ def par_map_timeout_7(
     fut6 = executor.submit(func6)
     fut7 = executor.submit(func7)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     return fut1_result, fut2_result, fut3_result, fut4_result, fut5_result, fut6_result, fut7_result
 
 
@@ -246,6 +423,8 @@ def par_map_timeout_8(
 ) -> Tuple[
     Optional[A1], Optional[A2], Optional[A3], Optional[A4], Optional[A5], Optional[A6], Optional[A7], Optional[A8]
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -255,29 +434,77 @@ def par_map_timeout_8(
     fut7 = executor.submit(func7)
     fut8 = executor.submit(func8)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     return fut1_result, fut2_result, fut3_result, fut4_result, fut5_result, fut6_result, fut7_result, fut8_result
 
 
@@ -305,6 +532,8 @@ def par_map_timeout_9(
     Optional[A8],
     Optional[A9],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -315,32 +544,86 @@ def par_map_timeout_9(
     fut8 = executor.submit(func8)
     fut9 = executor.submit(func9)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -380,6 +663,8 @@ def par_map_timeout_10(
     Optional[A9],
     Optional[A10],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -391,35 +676,95 @@ def par_map_timeout_10(
     fut9 = executor.submit(func9)
     fut10 = executor.submit(func10)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -462,6 +807,8 @@ def par_map_timeout_11(
     Optional[A10],
     Optional[A11],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -474,38 +821,104 @@ def par_map_timeout_11(
     fut10 = executor.submit(func10)
     fut11 = executor.submit(func11)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -551,6 +964,8 @@ def par_map_timeout_12(
     Optional[A11],
     Optional[A12],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -564,41 +979,113 @@ def par_map_timeout_12(
     fut11 = executor.submit(func11)
     fut12 = executor.submit(func12)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -647,6 +1134,8 @@ def par_map_timeout_13(
     Optional[A12],
     Optional[A13],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -661,44 +1150,122 @@ def par_map_timeout_13(
     fut12 = executor.submit(func12)
     fut13 = executor.submit(func13)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -750,6 +1317,8 @@ def par_map_timeout_14(
     Optional[A13],
     Optional[A14],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -765,47 +1334,131 @@ def par_map_timeout_14(
     fut13 = executor.submit(func13)
     fut14 = executor.submit(func14)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -860,6 +1513,8 @@ def par_map_timeout_15(
     Optional[A14],
     Optional[A15],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -876,50 +1531,140 @@ def par_map_timeout_15(
     fut14 = executor.submit(func14)
     fut15 = executor.submit(func15)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut15_result = try_future_result(
-        future=fut15, timeout=timeout, logger=logger, func_name=func15.__name__, func_number=15
+        future=fut15,
+        timeout_left=time_left_after_fut14,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func15.__name__,
+        func_number=15,
     )
+    time_left_after_fut15: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -977,6 +1722,8 @@ def par_map_timeout_16(
     Optional[A15],
     Optional[A16],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -994,53 +1741,149 @@ def par_map_timeout_16(
     fut15 = executor.submit(func15)
     fut16 = executor.submit(func16)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut15_result = try_future_result(
-        future=fut15, timeout=timeout, logger=logger, func_name=func15.__name__, func_number=15
+        future=fut15,
+        timeout_left=time_left_after_fut14,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func15.__name__,
+        func_number=15,
     )
+    time_left_after_fut15: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut16_result = try_future_result(
-        future=fut16, timeout=timeout, logger=logger, func_name=func16.__name__, func_number=16
+        future=fut16,
+        timeout_left=time_left_after_fut15,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func16.__name__,
+        func_number=16,
     )
+    time_left_after_fut16: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -1101,6 +1944,8 @@ def par_map_timeout_17(
     Optional[A16],
     Optional[A17],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -1119,56 +1964,158 @@ def par_map_timeout_17(
     fut16 = executor.submit(func16)
     fut17 = executor.submit(func17)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut15_result = try_future_result(
-        future=fut15, timeout=timeout, logger=logger, func_name=func15.__name__, func_number=15
+        future=fut15,
+        timeout_left=time_left_after_fut14,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func15.__name__,
+        func_number=15,
     )
+    time_left_after_fut15: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut16_result = try_future_result(
-        future=fut16, timeout=timeout, logger=logger, func_name=func16.__name__, func_number=16
+        future=fut16,
+        timeout_left=time_left_after_fut15,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func16.__name__,
+        func_number=16,
     )
+    time_left_after_fut16: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut17_result = try_future_result(
-        future=fut17, timeout=timeout, logger=logger, func_name=func17.__name__, func_number=17
+        future=fut17,
+        timeout_left=time_left_after_fut16,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func17.__name__,
+        func_number=17,
     )
+    time_left_after_fut17: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -1232,6 +2179,8 @@ def par_map_timeout_18(
     Optional[A17],
     Optional[A18],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -1251,59 +2200,167 @@ def par_map_timeout_18(
     fut17 = executor.submit(func17)
     fut18 = executor.submit(func18)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut15_result = try_future_result(
-        future=fut15, timeout=timeout, logger=logger, func_name=func15.__name__, func_number=15
+        future=fut15,
+        timeout_left=time_left_after_fut14,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func15.__name__,
+        func_number=15,
     )
+    time_left_after_fut15: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut16_result = try_future_result(
-        future=fut16, timeout=timeout, logger=logger, func_name=func16.__name__, func_number=16
+        future=fut16,
+        timeout_left=time_left_after_fut15,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func16.__name__,
+        func_number=16,
     )
+    time_left_after_fut16: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut17_result = try_future_result(
-        future=fut17, timeout=timeout, logger=logger, func_name=func17.__name__, func_number=17
+        future=fut17,
+        timeout_left=time_left_after_fut16,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func17.__name__,
+        func_number=17,
     )
+    time_left_after_fut17: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut18_result = try_future_result(
-        future=fut18, timeout=timeout, logger=logger, func_name=func18.__name__, func_number=18
+        future=fut18,
+        timeout_left=time_left_after_fut17,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func18.__name__,
+        func_number=18,
     )
+    time_left_after_fut18: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -1370,6 +2427,8 @@ def par_map_timeout_19(
     Optional[A18],
     Optional[A19],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -1390,62 +2449,176 @@ def par_map_timeout_19(
     fut18 = executor.submit(func18)
     fut19 = executor.submit(func19)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut15_result = try_future_result(
-        future=fut15, timeout=timeout, logger=logger, func_name=func15.__name__, func_number=15
+        future=fut15,
+        timeout_left=time_left_after_fut14,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func15.__name__,
+        func_number=15,
     )
+    time_left_after_fut15: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut16_result = try_future_result(
-        future=fut16, timeout=timeout, logger=logger, func_name=func16.__name__, func_number=16
+        future=fut16,
+        timeout_left=time_left_after_fut15,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func16.__name__,
+        func_number=16,
     )
+    time_left_after_fut16: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut17_result = try_future_result(
-        future=fut17, timeout=timeout, logger=logger, func_name=func17.__name__, func_number=17
+        future=fut17,
+        timeout_left=time_left_after_fut16,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func17.__name__,
+        func_number=17,
     )
+    time_left_after_fut17: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut18_result = try_future_result(
-        future=fut18, timeout=timeout, logger=logger, func_name=func18.__name__, func_number=18
+        future=fut18,
+        timeout_left=time_left_after_fut17,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func18.__name__,
+        func_number=18,
     )
+    time_left_after_fut18: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut19_result = try_future_result(
-        future=fut19, timeout=timeout, logger=logger, func_name=func19.__name__, func_number=19
+        future=fut19,
+        timeout_left=time_left_after_fut18,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func19.__name__,
+        func_number=19,
     )
+    time_left_after_fut19: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -1515,6 +2688,8 @@ def par_map_timeout_20(
     Optional[A19],
     Optional[A20],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -1536,65 +2711,185 @@ def par_map_timeout_20(
     fut19 = executor.submit(func19)
     fut20 = executor.submit(func20)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut15_result = try_future_result(
-        future=fut15, timeout=timeout, logger=logger, func_name=func15.__name__, func_number=15
+        future=fut15,
+        timeout_left=time_left_after_fut14,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func15.__name__,
+        func_number=15,
     )
+    time_left_after_fut15: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut16_result = try_future_result(
-        future=fut16, timeout=timeout, logger=logger, func_name=func16.__name__, func_number=16
+        future=fut16,
+        timeout_left=time_left_after_fut15,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func16.__name__,
+        func_number=16,
     )
+    time_left_after_fut16: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut17_result = try_future_result(
-        future=fut17, timeout=timeout, logger=logger, func_name=func17.__name__, func_number=17
+        future=fut17,
+        timeout_left=time_left_after_fut16,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func17.__name__,
+        func_number=17,
     )
+    time_left_after_fut17: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut18_result = try_future_result(
-        future=fut18, timeout=timeout, logger=logger, func_name=func18.__name__, func_number=18
+        future=fut18,
+        timeout_left=time_left_after_fut17,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func18.__name__,
+        func_number=18,
     )
+    time_left_after_fut18: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut19_result = try_future_result(
-        future=fut19, timeout=timeout, logger=logger, func_name=func19.__name__, func_number=19
+        future=fut19,
+        timeout_left=time_left_after_fut18,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func19.__name__,
+        func_number=19,
     )
+    time_left_after_fut19: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut20_result = try_future_result(
-        future=fut20, timeout=timeout, logger=logger, func_name=func20.__name__, func_number=20
+        future=fut20,
+        timeout_left=time_left_after_fut19,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func20.__name__,
+        func_number=20,
     )
+    time_left_after_fut20: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -1667,6 +2962,8 @@ def par_map_timeout_21(
     Optional[A20],
     Optional[A21],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -1689,68 +2986,194 @@ def par_map_timeout_21(
     fut20 = executor.submit(func20)
     fut21 = executor.submit(func21)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut15_result = try_future_result(
-        future=fut15, timeout=timeout, logger=logger, func_name=func15.__name__, func_number=15
+        future=fut15,
+        timeout_left=time_left_after_fut14,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func15.__name__,
+        func_number=15,
     )
+    time_left_after_fut15: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut16_result = try_future_result(
-        future=fut16, timeout=timeout, logger=logger, func_name=func16.__name__, func_number=16
+        future=fut16,
+        timeout_left=time_left_after_fut15,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func16.__name__,
+        func_number=16,
     )
+    time_left_after_fut16: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut17_result = try_future_result(
-        future=fut17, timeout=timeout, logger=logger, func_name=func17.__name__, func_number=17
+        future=fut17,
+        timeout_left=time_left_after_fut16,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func17.__name__,
+        func_number=17,
     )
+    time_left_after_fut17: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut18_result = try_future_result(
-        future=fut18, timeout=timeout, logger=logger, func_name=func18.__name__, func_number=18
+        future=fut18,
+        timeout_left=time_left_after_fut17,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func18.__name__,
+        func_number=18,
     )
+    time_left_after_fut18: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut19_result = try_future_result(
-        future=fut19, timeout=timeout, logger=logger, func_name=func19.__name__, func_number=19
+        future=fut19,
+        timeout_left=time_left_after_fut18,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func19.__name__,
+        func_number=19,
     )
+    time_left_after_fut19: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut20_result = try_future_result(
-        future=fut20, timeout=timeout, logger=logger, func_name=func20.__name__, func_number=20
+        future=fut20,
+        timeout_left=time_left_after_fut19,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func20.__name__,
+        func_number=20,
     )
+    time_left_after_fut20: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut21_result = try_future_result(
-        future=fut21, timeout=timeout, logger=logger, func_name=func21.__name__, func_number=21
+        future=fut21,
+        timeout_left=time_left_after_fut20,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func21.__name__,
+        func_number=21,
     )
+    time_left_after_fut21: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,
@@ -1826,6 +3249,8 @@ def par_map_timeout_22(
     Optional[A21],
     Optional[A22],
 ]:
+    starting_time = datetime.now()
+    time_left_after_fut0 = timeout
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut3 = executor.submit(func3)
@@ -1849,71 +3274,203 @@ def par_map_timeout_22(
     fut21 = executor.submit(func21)
     fut22 = executor.submit(func22)
     fut1_result = try_future_result(
-        future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
+        future=fut1,
+        timeout_left=time_left_after_fut0,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func1.__name__,
+        func_number=1,
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2,
+        timeout_left=time_left_after_fut1,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func2.__name__,
+        func_number=2,
     )
+    time_left_after_fut2: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut3_result = try_future_result(
-        future=fut3, timeout=timeout, logger=logger, func_name=func3.__name__, func_number=3
+        future=fut3,
+        timeout_left=time_left_after_fut2,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func3.__name__,
+        func_number=3,
     )
+    time_left_after_fut3: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut4_result = try_future_result(
-        future=fut4, timeout=timeout, logger=logger, func_name=func4.__name__, func_number=4
+        future=fut4,
+        timeout_left=time_left_after_fut3,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func4.__name__,
+        func_number=4,
     )
+    time_left_after_fut4: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut5_result = try_future_result(
-        future=fut5, timeout=timeout, logger=logger, func_name=func5.__name__, func_number=5
+        future=fut5,
+        timeout_left=time_left_after_fut4,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func5.__name__,
+        func_number=5,
     )
+    time_left_after_fut5: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut6_result = try_future_result(
-        future=fut6, timeout=timeout, logger=logger, func_name=func6.__name__, func_number=6
+        future=fut6,
+        timeout_left=time_left_after_fut5,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func6.__name__,
+        func_number=6,
     )
+    time_left_after_fut6: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut7_result = try_future_result(
-        future=fut7, timeout=timeout, logger=logger, func_name=func7.__name__, func_number=7
+        future=fut7,
+        timeout_left=time_left_after_fut6,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func7.__name__,
+        func_number=7,
     )
+    time_left_after_fut7: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut8_result = try_future_result(
-        future=fut8, timeout=timeout, logger=logger, func_name=func8.__name__, func_number=8
+        future=fut8,
+        timeout_left=time_left_after_fut7,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func8.__name__,
+        func_number=8,
     )
+    time_left_after_fut8: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut9_result = try_future_result(
-        future=fut9, timeout=timeout, logger=logger, func_name=func9.__name__, func_number=9
+        future=fut9,
+        timeout_left=time_left_after_fut8,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func9.__name__,
+        func_number=9,
     )
+    time_left_after_fut9: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut10_result = try_future_result(
-        future=fut10, timeout=timeout, logger=logger, func_name=func10.__name__, func_number=10
+        future=fut10,
+        timeout_left=time_left_after_fut9,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func10.__name__,
+        func_number=10,
     )
+    time_left_after_fut10: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut11_result = try_future_result(
-        future=fut11, timeout=timeout, logger=logger, func_name=func11.__name__, func_number=11
+        future=fut11,
+        timeout_left=time_left_after_fut10,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func11.__name__,
+        func_number=11,
     )
+    time_left_after_fut11: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut12_result = try_future_result(
-        future=fut12, timeout=timeout, logger=logger, func_name=func12.__name__, func_number=12
+        future=fut12,
+        timeout_left=time_left_after_fut11,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func12.__name__,
+        func_number=12,
     )
+    time_left_after_fut12: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut13_result = try_future_result(
-        future=fut13, timeout=timeout, logger=logger, func_name=func13.__name__, func_number=13
+        future=fut13,
+        timeout_left=time_left_after_fut12,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func13.__name__,
+        func_number=13,
     )
+    time_left_after_fut13: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut14_result = try_future_result(
-        future=fut14, timeout=timeout, logger=logger, func_name=func14.__name__, func_number=14
+        future=fut14,
+        timeout_left=time_left_after_fut13,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func14.__name__,
+        func_number=14,
     )
+    time_left_after_fut14: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut15_result = try_future_result(
-        future=fut15, timeout=timeout, logger=logger, func_name=func15.__name__, func_number=15
+        future=fut15,
+        timeout_left=time_left_after_fut14,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func15.__name__,
+        func_number=15,
     )
+    time_left_after_fut15: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut16_result = try_future_result(
-        future=fut16, timeout=timeout, logger=logger, func_name=func16.__name__, func_number=16
+        future=fut16,
+        timeout_left=time_left_after_fut15,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func16.__name__,
+        func_number=16,
     )
+    time_left_after_fut16: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut17_result = try_future_result(
-        future=fut17, timeout=timeout, logger=logger, func_name=func17.__name__, func_number=17
+        future=fut17,
+        timeout_left=time_left_after_fut16,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func17.__name__,
+        func_number=17,
     )
+    time_left_after_fut17: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut18_result = try_future_result(
-        future=fut18, timeout=timeout, logger=logger, func_name=func18.__name__, func_number=18
+        future=fut18,
+        timeout_left=time_left_after_fut17,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func18.__name__,
+        func_number=18,
     )
+    time_left_after_fut18: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut19_result = try_future_result(
-        future=fut19, timeout=timeout, logger=logger, func_name=func19.__name__, func_number=19
+        future=fut19,
+        timeout_left=time_left_after_fut18,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func19.__name__,
+        func_number=19,
     )
+    time_left_after_fut19: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut20_result = try_future_result(
-        future=fut20, timeout=timeout, logger=logger, func_name=func20.__name__, func_number=20
+        future=fut20,
+        timeout_left=time_left_after_fut19,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func20.__name__,
+        func_number=20,
     )
+    time_left_after_fut20: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut21_result = try_future_result(
-        future=fut21, timeout=timeout, logger=logger, func_name=func21.__name__, func_number=21
+        future=fut21,
+        timeout_left=time_left_after_fut20,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func21.__name__,
+        func_number=21,
     )
+    time_left_after_fut21: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut22_result = try_future_result(
-        future=fut22, timeout=timeout, logger=logger, func_name=func22.__name__, func_number=22
+        future=fut22,
+        timeout_left=time_left_after_fut21,
+        overall_timeout=timeout,
+        logger=logger,
+        func_name=func22.__name__,
+        func_number=22,
     )
+    time_left_after_fut22: timedelta = abs(timeout - (datetime.now() - starting_time))
     return (
         fut1_result,
         fut2_result,

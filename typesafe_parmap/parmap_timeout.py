@@ -7,7 +7,7 @@ A = TypeVar("A")
 
 
 def try_future_result(
-    future: concurrent.futures.Future[A],
+    future: "concurrent.futures.Future[A]",
     timeout_left: timedelta,
     overall_timeout: timedelta,
     logger: Optional[Callable[[str], None]],

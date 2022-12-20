@@ -11,8 +11,8 @@ def long_running_int(param: int) -> int:
     return param
 
 
-def short_running_str(param: str) -> str:
-    time.sleep(1)
+def short_running_str(param: str, sleep_seconds: int = 1) -> str:
+    time.sleep(sleep_seconds)
     return param
 
 
@@ -43,11 +43,58 @@ def test_timeout_parmap_n():
     executor = ThreadPoolExecutor(2)
     int_result, str_result_1, str_result_2 = par_map_timeout_n(
         func1=lambda: long_running_int(5),
-        func2=lambda: short_running_str("test 1"),
-        func3=lambda: short_running_str("test 2"),
+        func2=lambda: short_running_str("test 1", sleep_seconds=1),
+        func3=lambda: short_running_str("test 2", sleep_seconds=1),
         executor=executor,
         timeout=timedelta(seconds=5),
     )
     assert int_result is None
     assert str_result_1 == "test 1"
     assert str_result_2 == "test 2"
+
+
+def test_timeout_overall_2():
+    # The timeout should be applied overall
+    # We limit the timeout to 4 seconds
+    # Each function takes 3 seconds
+    # So the parmap should timeout after 4 seconds, not 8
+
+    executor = ThreadPoolExecutor(1)
+    start_time = time.time()
+    str_result_1, str_result_2 = par_map_timeout_2(
+        lambda: short_running_str("test 1", sleep_seconds=3),
+        lambda: short_running_str("test 2", sleep_seconds=3),
+        executor=executor,
+        timeout=timedelta(seconds=4),
+    )
+    end_time = time.time()
+    total_time = end_time - start_time
+    assert total_time < 5, "The parmap should have timed out after 4 seconds"
+    assert str_result_1 == "test 1"
+    assert str_result_2 is None
+
+
+def test_timeout_overall():
+    # The timeout should be applied to each function
+    # We limit the timeout to 5 seconds
+    # But supply it with 10 functions that take 1 second each
+    # It should timeout after 5 seconds
+    executor = ThreadPoolExecutor(1)
+    start_time = time.time()
+    par_map_timeout_n(
+        lambda: short_running_str("test 1"),
+        lambda: short_running_str("test 2"),
+        lambda: short_running_str("test 3"),
+        lambda: short_running_str("test 4"),
+        lambda: short_running_str("test 5"),
+        lambda: short_running_str("test 6"),
+        lambda: short_running_str("test 7"),
+        lambda: short_running_str("test 8"),
+        lambda: short_running_str("test 9"),
+        lambda: short_running_str("test 10"),
+        executor=executor,
+        timeout=timedelta(seconds=5),
+    )
+    end_time = time.time()
+    total_time = end_time - start_time
+    assert total_time < 6, "The parmap should have timed out after 5 seconds"

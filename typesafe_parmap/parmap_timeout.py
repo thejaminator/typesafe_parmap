@@ -1,6 +1,6 @@
 import concurrent
 from concurrent.futures import Future
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import Optional, Callable, Tuple, TypeVar
 
 A = TypeVar("A")
@@ -53,13 +53,15 @@ def par_map_timeout_2(
     timeout: timedelta,
     logger: Optional[Callable[[str], None]] = None,
 ) -> Tuple[Optional[A1], Optional[A2]]:
+    starting_time = datetime.now()
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     fut1_result = try_future_result(
         future=fut1, timeout=timeout, logger=logger, func_name=func1.__name__, func_number=1
     )
+    time_left_after_fut1: timedelta = abs(timeout - (datetime.now() - starting_time))
     fut2_result = try_future_result(
-        future=fut2, timeout=timeout, logger=logger, func_name=func2.__name__, func_number=2
+        future=fut2, timeout=time_left_after_fut1, logger=logger, func_name=func2.__name__, func_number=2
     )
     return fut1_result, fut2_result
 

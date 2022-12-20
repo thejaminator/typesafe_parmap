@@ -2,9 +2,10 @@
 """Tests for `typesafe_parmap` package."""
 import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
 
 from typesafe_parmap import par_map_2, par_map_3, par_map_n
-
+from typesafe_parmap.parmap_timeout import par_map_2_timeout
 
 tp = ThreadPoolExecutor(5)
 
@@ -56,3 +57,23 @@ def test_example() -> None:
     )
 
     assert c == d
+
+
+def test_timeout_parmap():
+    def long_running_int(param: int) -> int:
+        time.sleep(10)  # long IO task here that should tiemout
+        return param
+
+    def short_running_str(param: str) -> str:
+        time.sleep(1)
+        return param
+
+    executor = ThreadPoolExecutor(2)
+    int_result, str_result = par_map_2_timeout(
+        func1=lambda: long_running_int(5),
+        func2=lambda: short_running_str("test"),
+        executor=executor,
+        timeout=timedelta(seconds=5),
+    )
+    assert int_result is None
+    assert str_result == "test"

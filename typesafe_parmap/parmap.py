@@ -1,4 +1,6 @@
 import concurrent.futures
+from concurrent.futures import Future
+from datetime import timedelta
 from typing import *
 
 A1 = TypeVar("A1")
@@ -33,6 +35,9 @@ def par_map_2(
     fut1 = executor.submit(func1)
     fut2 = executor.submit(func2)
     return fut1.result(), fut2.result()
+
+
+
 
 
 def par_map_3(
